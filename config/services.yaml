@@ -1,0 +1,20 @@
+parameters:
+    app_domain: '%env(APP_DOMAIN)%'
+    webauthn_rp_name: '%env(WEBAUTHN_RP_NAME)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Service\PasskeyAuthService:
+        arguments:
+            $appDomain: '%env(APP_DOMAIN)%'
+            $rpName: '%env(WEBAUTHN_RP_NAME)%'

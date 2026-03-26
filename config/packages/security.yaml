@@ -1,0 +1,71 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+        app_admin_provider:
+            entity:
+                class: App\Entity\Admin
+                property: username
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        # Public auth endpoints (passkey register/login)
+        auth_api:
+            pattern: ^/api/auth/(register|login)
+            stateless: true
+            security: false
+
+        # Admin JWT firewall
+        admin_api:
+            pattern: ^/api/admin
+            stateless: true
+            provider: app_admin_provider
+            jwt: ~
+
+        # Main API firewall (JWT protected)
+        api:
+            pattern: ^/api
+            stateless: true
+            provider: app_user_provider
+            jwt: ~
+            refresh_jwt:
+                check_path: /api/token/refresh
+
+        # Web firewall for traditional admin login form
+        admin_web:
+            pattern: ^/admin
+            provider: app_admin_provider
+            form_login:
+                login_path: admin_login
+                check_path: admin_login_check
+                default_target_path: admin_dashboard
+            logout:
+                path: admin_logout
+                target: admin_login
+
+        main:
+            lazy: true
+            provider: app_user_provider
+
+    access_control:
+        # Public API routes
+        - { path: ^/api/auth/(register|login), roles: PUBLIC_ACCESS }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api/events$, roles: PUBLIC_ACCESS, methods: [GET] }
+        - { path: ^/api/events/\d+$, roles: PUBLIC_ACCESS, methods: [GET] }
+
+        # Protected API routes
+        - { path: ^/api/admin, roles: ROLE_ADMIN }
+        - { path: ^/api, roles: ROLE_USER }
+
+        # Web admin
+        - { path: ^/admin/login, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }

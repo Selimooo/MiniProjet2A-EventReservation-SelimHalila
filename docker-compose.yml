@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # ── PHP-FPM ──────────────────────────────────────────────────────────────
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: event_php
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+      APP_DEBUG: ${APP_DEBUG:-1}
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-secret}@db:5432/${POSTGRES_DB:-event_reservation}?serverVersion=15&charset=utf8
+      JWT_SECRET_KEY: /var/www/config/jwt/private.pem
+      JWT_PUBLIC_KEY: /var/www/config/jwt/public.pem
+      JWT_PASSPHRASE: ${JWT_PASSPHRASE}
+      JWT_TOKEN_TTL: ${JWT_TOKEN_TTL:-3600}
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+      WEBAUTHN_RP_NAME: ${WEBAUTHN_RP_NAME:-Event Reservation App}
+      CORS_ALLOW_ORIGIN: ${CORS_ALLOW_ORIGIN:-^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$}
+    volumes:
+      - .:/var/www
+      - ./config/jwt:/var/www/config/jwt:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  # ── Nginx ─────────────────────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: event_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+      # Uncomment for HTTPS:
+      # - "443:443"
+    volumes:
+      - ./public:/var/www/public:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      # - ./docker/ssl:/etc/nginx/ssl:ro   # for HTTPS
+    depends_on:
+      - php
+    networks:
+      - app_network
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: event_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-event_reservation}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  # ── Adminer (DB GUI - dev only) ───────────────────────────────────────────
+  adminer:
+    image: adminer
+    container_name: event_adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+    networks:
+      - app_network
+    profiles:
+      - dev
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

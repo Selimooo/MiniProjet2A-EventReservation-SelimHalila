@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — EventApp</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <style>
+        .admin-layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 220px; background: #1e293b; color: #fff;
+            padding: 1.5rem 1rem; flex-shrink: 0;
+        }
+        .sidebar-brand { font-size: 1.1rem; font-weight: 700; margin-bottom: 2rem; display: block; color: #fff; }
+        .sidebar a { display: block; padding: .6rem .75rem; color: #94a3b8; border-radius: .375rem;
+                     font-size: .875rem; margin-bottom: .25rem; text-decoration: none; }
+        .sidebar a:hover, .sidebar a.active { background: #334155; color: #fff; }
+        .admin-main { flex: 1; padding: 2rem; background: var(--bg); overflow-y: auto; }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+        .stat-card .stat-val { font-size: 2rem; font-weight: 800; color: var(--primary); }
+        .stat-card .stat-label { font-size: .8rem; color: var(--muted); margin-top: .25rem; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: .75rem; }
+    </style>
+</head>
+<body>
+<div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="/admin" class="sidebar-brand">🛡 Admin Panel</a>
+        <a href="/admin" class="active">📊 Dashboard</a>
+        <a href="/admin/events/new">➕ New Event</a>
+        <hr style="border-color:#334155;margin:.75rem 0;">
+        <a href="/" target="_blank">🌐 View Site</a>
+        <a href="/admin/logout" style="margin-top:auto;color:#f87171;">🚪 Logout</a>
+    </aside>
+
+    <!-- Main -->
+    <main class="admin-main">
+        {% for type, messages in app.flashes %}
+            {% for msg in messages %}
+                <div class="alert alert-{{ type == 'success' ? 'success' : 'danger' }}">{{ msg }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="page-header">
+            <div>
+                <h1 class="section-title">Dashboard</h1>
+                <p class="section-sub">Manage events and reservations</p>
+            </div>
+            <a href="/admin/events/new" class="btn btn-primary">➕ Create Event</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-val">{{ events|length }}</div>
+                <div class="stat-label">Total Events</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val">{{ totalReservations }}</div>
+                <div class="stat-label">Total Reservations</div>
+            </div>
+        </div>
+
+        <!-- Events Table -->
+        <div class="card" style="padding:0;overflow:hidden;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Seats</th>
+                        <th>Reservations</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.id }}</td>
+                        <td><strong>{{ event.title }}</strong></td>
+                        <td>{{ event.date|date('d M Y H:i') }}</td>
+                        <td>{{ event.location }}</td>
+                        <td>{{ event.seats }}</td>
+                        <td>
+                            <a href="/admin/events/{{ event.id }}/reservations">
+                                {{ event.reservations|length }} reservations
+                            </a>
+                        </td>
+                        <td style="white-space:nowrap;">
+                            <a href="/admin/events/{{ event.id }}/edit" class="btn btn-sm btn-outline">✏️ Edit</a>
+                            <form method="post" action="/admin/events/{{ event.id }}/delete"
+                                  style="display:inline;"
+                                  onsubmit="return confirm('Delete this event?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑 Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;">No events yet. <a href="/admin/events/new">Create one</a>.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+###< phpunit/phpunit ###
+
+###> JWT Keys - NEVER commit private key ###
+/config/jwt/private.pem
+/config/jwt/public.pem
+###< JWT Keys ###
+
+###> Docker ###
+docker/ssl/*.pem
+docker/ssl/*.crt
+docker/ssl/*.key
+###< Docker ###
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,21 @@
+controllers:
+    resource:
+        path: '../src/Controller/'
+        namespace: App\Controller
+    type: attribute
+
+# Refresh token route (handled by GesdinetBundle)
+gesdinet_jwt_refresh_token:
+    path: /api/token/refresh
+    controller: gesdinet.jwtrefreshtoken.controller.refresh::refresh
+
+# Admin login form routes
+admin_login:
+    path: /admin/login
+    controller: App\Controller\AdminWebController::login
+
+admin_login_check:
+    path: /admin/login_check
+
+admin_logout:
+    path: /admin/logout

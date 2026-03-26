@@ -1,0 +1,22 @@
+web_auth:
+    credential_repository: App\Repository\WebauthnCredentialRepository
+    user_repository: App\Repository\UserRepository
+
+    creation_profiles:
+        default:
+            rp:
+                name: '%env(WEBAUTHN_RP_NAME)%'
+                id: '%env(APP_DOMAIN)%'
+            challenge_length: 32
+            timeout: 60000
+            authenticator_selection:
+                user_verification: preferred
+                resident_key: preferred
+            attestation: none
+
+    request_profiles:
+        default:
+            rp_id: '%env(APP_DOMAIN)%'
+            challenge_length: 32
+            timeout: 60000
+            user_verification: preferred

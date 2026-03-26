@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Upcoming Events{% endblock %}
+{% block page_id %}home{% endblock %}
+
+{% block body %}
+<section class="hero">
+    <h1>Discover & Reserve Events</h1>
+    <p>Browse upcoming conferences, workshops and meetups — secure your seat in seconds.</p>
+    <a href="/auth" class="btn btn-passkey">🔑 Login / Register to Reserve</a>
+</section>
+
+<div class="container">
+    <h2 class="section-title">Upcoming Events</h2>
+    <p class="section-sub">Click any event to see details and reserve your spot.</p>
+
+    <div id="events-container" class="events-grid">
+        <div class="loading">Loading events…</div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ action }} Event — Admin</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <style>
+        .admin-layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #1e293b; color: #fff; padding: 1.5rem 1rem; flex-shrink: 0; }
+        .sidebar-brand { font-size: 1.1rem; font-weight: 700; margin-bottom: 2rem; display: block; color: #fff; }
+        .sidebar a { display: block; padding: .6rem .75rem; color: #94a3b8; border-radius: .375rem;
+                     font-size: .875rem; margin-bottom: .25rem; text-decoration: none; }
+        .sidebar a:hover { background: #334155; color: #fff; }
+        .admin-main { flex: 1; padding: 2rem; background: var(--bg); }
+    </style>
+</head>
+<body>
+<div class="admin-layout">
+    <aside class="sidebar">
+        <a href="/admin" class="sidebar-brand">🛡 Admin Panel</a>
+        <a href="/admin">📊 Dashboard</a>
+        <a href="/admin/events/new" class="{{ action == 'Create' ? 'active' : '' }}">➕ New Event</a>
+        <hr style="border-color:#334155;margin:.75rem 0;">
+        <a href="/" target="_blank">🌐 View Site</a>
+        <a href="/admin/logout" style="color:#f87171;">🚪 Logout</a>
+    </aside>
+
+    <main class="admin-main">
+        <div style="max-width:680px;">
+            <a href="/admin" style="color:var(--muted);font-size:.875rem;">← Back to dashboard</a>
+            <h1 class="section-title" style="margin-top:1rem;">{{ action }} Event</h1>
+
+            <div class="card" style="margin-top:1.25rem;">
+                <form method="post">
+                    <div class="form-group">
+                        <label for="title">Event Title *</label>
+                        <input type="text" id="title" name="title" required
+                               value="{{ event ? event.title : '' }}"
+                               placeholder="e.g. Tech Conference 2026">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description *</label>
+                        <textarea id="description" name="description" required rows="4"
+                                  placeholder="Describe the event...">{{ event ? event.description : '' }}</textarea>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                        <div class="form-group">
+                            <label for="date">Date & Time *</label>
+                            <input type="datetime-local" id="date" name="date" required
+                                   value="{{ event ? event.date|date('Y-m-d\\TH:i') : '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="seats">Total Seats *</label>
+                            <input type="number" id="seats" name="seats" required min="1"
+                                   value="{{ event ? event.seats : 50 }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location *</label>
+                        <input type="text" id="location" name="location" required
+                               value="{{ event ? event.location : '' }}"
+                               placeholder="e.g. ISSAT Sousse, Room 101">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Image URL <span style="color:var(--muted)">(optional)</span></label>
+                        <input type="url" id="image" name="image"
+                               value="{{ event ? event.image : '' }}"
+                               placeholder="https://example.com/image.jpg">
+                    </div>
+
+                    <div style="display:flex;gap:.75rem;margin-top:.5rem;">
+                        <button type="submit" class="btn btn-primary">
+                            {{ action == 'Create' ? '➕ Create Event' : '💾 Save Changes' }}
+                        </button>
+                        <a href="/admin" class="btn btn-outline">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

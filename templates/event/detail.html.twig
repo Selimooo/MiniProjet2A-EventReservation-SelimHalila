@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Event Detail{% endblock %}
+{% block page_id %}event{% endblock %}
+
+{% block body %}
+<div class="container" id="event-detail" data-event-id="{{ eventId }}">
+    <a href="/" style="color:var(--muted);font-size:.875rem;">← Back to events</a>
+
+    <div class="event-detail-header" style="margin-top:1.5rem;">
+        <img id="event-image" class="event-detail-img" src="" alt="">
+        <div class="event-detail-info">
+            <h1 id="event-title">Loading…</h1>
+            <p class="event-detail-meta">📅 <span id="event-date"></span></p>
+            <p class="event-detail-meta">📍 <span id="event-location"></span></p>
+            <p class="event-detail-meta">🎟 <span id="event-seats"></span></p>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:2rem;">
+        <h2 style="margin-bottom:.75rem;">About this event</h2>
+        <p id="event-description" style="color:var(--muted);line-height:1.8;"></p>
+    </div>
+
+    <div id="reservation-section" class="card">
+        <h2 style="margin-bottom:1.25rem;">Reserve your seat</h2>
+        <form id="reservation-form">
+            <div class="form-group">
+                <label for="res-name">Full Name</label>
+                <input type="text" id="res-name" name="name" required placeholder="Your full name">
+            </div>
+            <div class="form-group">
+                <label for="res-email">Email</label>
+                <input type="email" id="res-email" name="email" required placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label for="res-phone">Phone</label>
+                <input type="tel" id="res-phone" name="phone" required placeholder="+216 xx xxx xxx">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="margin-top:.5rem;">
+                ✅ Confirm Reservation
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

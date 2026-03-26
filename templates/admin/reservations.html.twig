@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservations — {{ event.title }}</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <style>
+        .admin-layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #1e293b; color: #fff; padding: 1.5rem 1rem; flex-shrink: 0; }
+        .sidebar-brand { font-size: 1.1rem; font-weight: 700; margin-bottom: 2rem; display: block; color: #fff; }
+        .sidebar a { display: block; padding: .6rem .75rem; color: #94a3b8; border-radius: .375rem;
+                     font-size: .875rem; margin-bottom: .25rem; text-decoration: none; }
+        .sidebar a:hover { background: #334155; color: #fff; }
+        .admin-main { flex: 1; padding: 2rem; background: var(--bg); }
+    </style>
+</head>
+<body>
+<div class="admin-layout">
+    <aside class="sidebar">
+        <a href="/admin" class="sidebar-brand">🛡 Admin Panel</a>
+        <a href="/admin">📊 Dashboard</a>
+        <a href="/admin/events/new">➕ New Event</a>
+        <hr style="border-color:#334155;margin:.75rem 0;">
+        <a href="/" target="_blank">🌐 View Site</a>
+        <a href="/admin/logout" style="color:#f87171;">🚪 Logout</a>
+    </aside>
+
+    <main class="admin-main">
+        <a href="/admin" style="color:var(--muted);font-size:.875rem;">← Back to dashboard</a>
+
+        <div style="margin-top:1rem;margin-bottom:1.5rem;">
+            <h1 class="section-title">Reservations for "{{ event.title }}"</h1>
+            <p class="section-sub">
+                {{ reservations|length }} reservation(s) &nbsp;•&nbsp;
+                {{ event.availableSeats }} seats remaining out of {{ event.seats }}
+            </p>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Reserved At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reservations %}
+                    <tr>
+                        <td>{{ r.id }}</td>
+                        <td><strong>{{ r.name }}</strong></td>
+                        <td>{{ r.email }}</td>
+                        <td>{{ r.phone }}</td>
+                        <td>{{ r.createdAt|date('d M Y H:i') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align:center;padding:2rem;color:var(--muted);">
+                            No reservations yet for this event.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>
